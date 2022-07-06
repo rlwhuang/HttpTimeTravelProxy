@@ -15,12 +15,14 @@
 /* format for destination date is yyyyMMdd */
 const TIME_TRAVEL_DATETIME = "19990412";
 const PROXY_SERVER_PORT = 8099;
+const ADMIN_SERVER_PORT = 8098; 
 const PROXY_SERVER_NAME = "HttpTimeTravelProxy/0.1";
 const WAYBACK_URL = "https://web.archive.org/web/";
 const WAYBACK_URL_FORMAT = "https:\/\/web\.archive\.org\/web\/([0-9a-z_]*)\/(.*)";
 
 /* import the networking libs */
 const net = require('net');
+const http = require('http'); 
 
 /* create the server to serve the proxy port */
 let server = net.createServer(function (socket) {
@@ -71,9 +73,16 @@ let server = net.createServer(function (socket) {
     });
 });
 
+
+let administrativeServer = http.createServer(function (req, res) {
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    res.write('Hello World!');
+    res.end();
+})
+
 /* make the server listen on the port */
 server.listen({port: PROXY_SERVER_PORT});
-
+administrativeServer.listen({port: ADMIN_SERVER_PORT}); 
 /**
  * Checks the wayback machine's api for
  * any matching target url and returns
