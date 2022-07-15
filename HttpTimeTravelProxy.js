@@ -13,7 +13,9 @@
  */
 
 /* format for destination date is yyyyMMdd */
-const TIME_TRAVEL_DATETIME = "19990412";
+//const TIME_TRAVEL_DATETIME = "19990412";
+var TIME_TRAVEL_DATETIME = "19990412"; 
+
 const PROXY_SERVER_PORT = 8099;
 const ADMIN_SERVER_PORT = 8098; 
 const PROXY_SERVER_NAME = "HttpTimeTravelProxy/0.1";
@@ -23,6 +25,8 @@ const WAYBACK_URL_FORMAT = "https:\/\/web\.archive\.org\/web\/([0-9a-z_]*)\/(.*)
 /* import the networking libs */
 const net = require('net');
 const http = require('http'); 
+const url = require('url'); 
+const querystring = require('querystring'); 
 
 /* create the server to serve the proxy port */
 let server = net.createServer(function (socket) {
@@ -75,8 +79,34 @@ let server = net.createServer(function (socket) {
 
 
 let administrativeServer = http.createServer(function (req, res) {
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.write('Hello World!');
+    const form = `<h1>Time travel dashboard</h1>
+
+    <form action="/" method="get" target="_blank">
+      <label for="datetime">Destination Time: </label>
+      <input type="number" id="datetime" name="datetime" value=${TIME_TRAVEL_DATETIME}><br><br>
+      <input type="submit" value="Submit">
+    </form>
+    
+    <p>Current time set to: ${TIME_TRAVEL_DATETIME}  </p>
+    `; 
+
+
+    //let response = "pass ?datetime=[desired datetime for snapshot] in URL"; 
+    let parsed = url.parse(req.url); 
+    let query = querystring.parse(parsed.query);
+    response = ""; 
+    if ('datetime' in query){
+        if (/^[0-9]+$/.test(query['datetime'])){
+            TIME_TRAVEL_DATETIME = query['datetime'];
+            response = "Now proxying web archives from " + query['datetime']; 
+        } else {
+            response = "Datetime format error!"; 
+        }
+    } else {
+        response = form; 
+    }
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.write(response);
     res.end();
 })
 
