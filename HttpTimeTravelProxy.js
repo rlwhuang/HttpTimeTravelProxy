@@ -14,7 +14,7 @@
 
 /* format for destination date is yyyyMMdd */
 //const TIME_TRAVEL_DATETIME = "19990412";
-var TIME_TRAVEL_DATETIME = "19990412"; 
+let TIME_TRAVEL_DATETIME = "19990412"; 
 
 const PROXY_SERVER_PORT = 8099;
 const ADMIN_SERVER_PORT = 8098; 
